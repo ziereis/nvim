@@ -4,7 +4,7 @@
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
 ========                                    .-----.          ========
-========         .----------------------.   | === |          ========
+=======         .----------------------.   | === |          ========
 ========         |.-""""""""""""""""""-.|   |-----|          ========
 ========         ||                    ||   | === |          ========
 ========         ||   KICKSTART.NVIM   ||   |-----|          ========
@@ -114,9 +114,20 @@ vim.opt.showmode = false
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.opt.clipboard = 'unnamedplus'
-end)
+-- vim.schedule(function()
+-- vim.opt.clipboard = 'unnamedplus'
+vim.g.clipboard = {
+  name = 'OSC 52',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy '+',
+    ['*'] = require('vim.ui.clipboard.osc52').copy '*',
+  },
+  paste = {
+    ['+'] = require('vim.ui.clipboard.osc52').paste '+',
+    ['*'] = require('vim.ui.clipboard.osc52').paste '*',
+  },
+}
+-- end)
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -857,9 +868,9 @@ require('lazy').setup({
         -- No, but seriously. Please read `:help ins-completion`, it is really good!
         mapping = cmp.mapping.preset.insert {
           -- Select the [n]ext item
-          ['<C-n>'] = cmp.mapping.select_next_item(),
+          -- ['<C-n>'] = cmp.mapping.select_next_item(),
           -- Select the [p]revious item
-          ['<C-p>'] = cmp.mapping.select_prev_item(),
+          -- ['<C-p>'] = cmp.mapping.select_prev_item(),
 
           -- Scroll the documentation window [b]ack / [f]orward
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -868,13 +879,13 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['enter'] = cmp.mapping.confirm { select = true },
+          -- ['enter'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          --['<CR>'] = cmp.mapping.confirm { select = true },
-          --['<Tab>'] = cmp.mapping.select_next_item(),
-          --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
