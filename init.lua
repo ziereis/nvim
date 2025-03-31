@@ -749,6 +749,7 @@ require('lazy').setup({
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'clang-format', -- Used to format C/C++ code
+        'codelldb', -- Used for C/C++/Rust debugging
       })
       ensure_installed = vim.tbl_filter(function(name)
         return name ~= 'mlir'
