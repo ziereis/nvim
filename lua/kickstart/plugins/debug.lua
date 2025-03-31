@@ -94,7 +94,8 @@ return {
       -- online, please don't ask me how to install them :)
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
+        'delve', -- Go
+        'codelldb', -- C, C++, Rust
       },
     }
 
@@ -135,6 +136,25 @@ return {
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
+
+    -- Add configurations for C, C++, and Rust
+    -- For more information, see |:help dap-configuration|
+    dap.configurations.cpp = {
+      {
+        name = 'Launch file',
+        type = 'codelldb',
+        request = 'launch',
+        program = function()
+          return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+      },
+    }
+    -- The same configuration works for C
+    dap.configurations.c = dap.configurations.cpp
+    -- And Rust
+    dap.configurations.rust = dap.configurations.cpp
 
     -- Install golang specific config
     require('dap-go').setup {
