@@ -156,6 +156,26 @@ return {
     -- And Rust
     dap.configurations.rust = dap.configurations.cpp
 
+    -- Add configuration for Python scripts calling C++/Rust code via LLDB
+    dap.configurations.python = {
+      {
+        name = 'Launch Python script with LLDB',
+        type = 'codelldb', -- Use the lldb adapter
+        request = 'launch',
+        program = 'python3', -- Specify python3 as the program to launch
+        args = function()
+          -- Prompt the user for the script path and arguments
+          local script_and_args_str = vim.fn.input('Python script and args: ', vim.fn.getcwd() .. '/', 'file')
+          -- Split the input string by whitespace into a list of arguments
+          -- Note: This simple split might have issues with arguments containing spaces.
+          return vim.split(script_and_args_str, '%s+')
+        end,
+        cwd = '${workspaceFolder}', -- Run in the current working directory
+        stopOnEntry = false, -- Don't stop at the entry point of python3 itself
+      },
+      -- You could add other Python-specific debug configurations here later (e.g., using debugpy)
+    }
+
     -- Install golang specific config
     require('dap-go').setup {
       delve = {
