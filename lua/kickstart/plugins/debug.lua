@@ -150,6 +150,18 @@ return {
         cwd = '${workspaceFolder}',
         stopOnEntry = false,
       },
+      {
+        name = 'Run IREE module',
+        type = 'codelldb',
+        request = 'launch',
+        program = './bazel-bin/external/iree/tools/iree-run-module',
+        args = function()
+          local input_args = vim.fn.input 'Arguments for iree-run-module (e.g., --module=example.vmfb --input=3xf32=0.5): '
+          return vim.split(input_args, '%s+')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+      },
     }
     -- The same configuration works for C
     dap.configurations.c = dap.configurations.cpp
