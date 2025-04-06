@@ -87,6 +87,10 @@ P.S. You can delete this when you're done too. It's your config now! :)
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
+vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'none' })
+vim.api.nvim_set_hl(0, 'FloatBorder', { bg = 'none' })
+vim.api.nvim_set_hl(0, 'Pmenu', { bg = 'none' })
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -954,27 +958,29 @@ require('lazy').setup({
     end,
   },
 
-  -- { -- You can easily change to a different colorscheme.
-  --   -- Change the name of the colorscheme plugin below, and then
-  --   -- change the command in the config to whatever the name of that colorscheme is.
-  --   --
-  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  --   'rose-pine/neovim',
-  --   priority = 1000, -- Make sure to load this before all the other start plugins.
+  -- {
+  --   'bluz71/vim-moonfly-colors',
+  --   priority = 1000,
   --   config = function()
-  --     ---@diagnostic disable-next-line: missing-fields
-  --     require('rose-pine').setup {
-  --       styles = {
-  --         comments = { italic = false }, -- Disable italics in comments
-  --       },
-  --     }
-  --
-  --     -- Load the colorscheme here.
-  --     -- Like many other themes, this one has different styles, and you could load
-  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-  --     vim.cmd.colorscheme 'rose-pine'
+  --     -- require('oxocarbon').setup {}
+  --     vim.cmd.colorscheme 'moonfly'
   --   end,
   -- },
+  --
+  {
+    'rose-pine/neovim',
+    priority = 1000,
+    config = function()
+      require('rose-pine').setup {
+        styles = {
+          bold = false,
+          italic = false,
+          transparency = true,
+        },
+      }
+      vim.cmd.colorscheme 'rose-pine'
+    end,
+  },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
