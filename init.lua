@@ -1,7 +1,7 @@
 --[[
 
 =====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
+=================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
 ========                                    .-----.          ========
 =======         .----------------------.   | === |          ========
@@ -688,10 +688,10 @@ require('lazy').setup({
       local custom_servers = {
         mlir = {
           default_config = {
-            cmd = { vim.fn.expand '~/projects/iree/build/tools/iree-mlir-lsp-server' },
+            cmd = { 'bazel-bin/external/iree/tools/iree-mlir-lsp-server' },
             filetypes = { 'mlir' },
             root_dir = function(fname)
-              return vim.fs.dirname(vim.fs.find({ 'build/tools/iree-mlir-lsp-server' }, { upward = true })[1])
+              return vim.fn.getcwd()
             end,
             single_file_support = true,
             settings = {},
@@ -707,11 +707,17 @@ require('lazy').setup({
       end
 
       local servers = {
-        clangd = {},
+        mlir = {},
+        clangd = {
+          root_dir = function()
+            return vim.fn.getcwd()
+          end,
+        },
         -- gopls = {},
-        pyright = {
+        pyright = { enabled = false }, -- Disable regular Pyright
+        basedpyright = {
           settings = {
-            pyright = {
+            basedpyright = {
               -- Explicitly enable pyproject.toml support
               usePyprojectToml = true,
             },
@@ -967,18 +973,52 @@ require('lazy').setup({
   --   end,
   -- },
   --
+  -- {
+  --   'rose-pine/neovim',
+  --   priority = 1000,
+  --   config = function()
+  --     require('rose-pine').setup {
+  --       styles = {
+  --         bold = false,
+  --         italic = false,
+  --         transparency = true,
+  --       },
+  --     }
+  --     vim.cmd.colorscheme 'rose-pine'
+  --   end,
+  -- },
+  -- {
+  --   'rose-pine/neovim',
+  --   priority = 1000,
+  --   config = function()
+  --     require('rose-pine').setup {
+  --       styles = {
+  --         bold = false,
+  --         italic = false,
+  --         transparency = true,
+  --       },
+  --     }
+  --     vim.cmd.colorscheme 'rose-pine'
+  --   end,
+  -- },
   {
-    'rose-pine/neovim',
+    'folke/tokyonight.nvim',
     priority = 1000,
     config = function()
-      require('rose-pine').setup {
+      require('tokyonight').setup {
+        style = 'night', -- Options: 'storm', 'night', 'moon', 'day'
+        transparent = true, -- Enable transparency
         styles = {
-          bold = false,
-          italic = false,
-          transparency = true,
+          comments = { italic = false },
+          keywords = { italic = false },
+          functions = {},
+          variables = {},
+          -- Background styles for transparent mode
+          sidebars = 'transparent',
+          floats = 'transparent',
         },
       }
-      vim.cmd.colorscheme 'rose-pine'
+      vim.cmd.colorscheme 'tokyonight'
     end,
   },
 
@@ -1105,7 +1145,6 @@ require('lazy').setup({
 })
 
 require('lspconfig').mlir.setup {
-  cmd = { vim.fn.expand '~/projects/iree/build/tools/iree-mlir-lsp-server' },
   filetypes = { 'mlir' },
   on_init = function(client)
     print('MLIR LSP started! Client ID:', client.id)
