@@ -178,6 +178,24 @@ vim.opt.confirm = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+--
+vim.keymap.set('n', '<leader>pc', ":call setreg('+', expand('%:.') .. ':' .. line('.'))<CR>", { desc = '[P]ath copy' })
+vim.keymap.set('n', '<leader>po', function()
+  local clipboard = vim.fn.getreg '+' -- Get clipboard content
+
+  -- Improved matching:
+  -- 1. `file:123` → captures `file` and `123`
+  -- 2. `file 123` → captures `file` and `123`
+  -- 3. `file +123` → captures `file` and `123`
+  -- Now correctly handles paths like `/home/user/.config/nvim/init.lua:118`
+  local file_path, line_num = clipboard:match '^(.-)[:%s]+(%d+)$'
+
+  if file_path and line_num then
+    vim.cmd('e +' .. line_num .. ' ' .. file_path)
+  else
+    vim.cmd('e ' .. clipboard)
+  end
+end, { noremap = true, desc = '[P]ath open' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -688,9 +706,10 @@ require('lazy').setup({
       local custom_servers = {
         mlir = {
           default_config = {
+            filetypes = { 'mlir' },
             cmd = { 'bazel-bin/external/iree/tools/iree-mlir-lsp-server' },
             filetypes = { 'mlir' },
-            root_dir = function(fname)
+            root_dir = function()
               return vim.fn.getcwd()
             end,
             single_file_support = true,
@@ -1144,10 +1163,37 @@ require('lazy').setup({
   },
 })
 
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'c', 'cpp', 'objc', 'objcpp' },
+  callback = function()
+    vim.bo.commentstring = '// %s'
+  end,
+})
+
+local function find_iree_server()
+  local cwd = vim.fn.getcwd()
+  local p1 = cwd .. '/bazel-bin/external/iree/tools/iree-mlir-lsp-server'
+  if vim.loop.fs_stat(p1) then
+    return p1
+  end
+  local p2 = cwd .. '/build/tools/iree-mlir-lsp-server'
+  if vim.loop.fs_stat(p2) then
+    return p2
+  end
+  return 'iree-mlir-lsp-server' -- fallback to $PATH
+end
+
+vim.filetype.add {
+  extension = {
+    mlir = 'mlir',
+  },
+}
+
 require('lspconfig').mlir.setup {
+  cmd = { find_iree_server() },
   filetypes = { 'mlir' },
   on_init = function(client)
-    print('MLIR LSP started! Client ID:', client.id)
+    print('MLIR LSP started! ID:', client.id)
   end,
   on_error = function(err)
     print('MLIR LSP error:', err)
