@@ -855,6 +855,7 @@ require('lazy').setup({
         lua = { 'stylua' },
         c = { 'clang-format' },
         cpp = { 'clang-format' },
+        cuda = { 'clang-format' },
         python = { 'black' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
@@ -927,7 +928,8 @@ require('lazy').setup({
           -- ['<C-p>'] = cmp.mapping.select_prev_item(),
 
           -- Scroll the documentation window [b]ack / [f]orward
-          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-y>'] = require('minuet').make_cmp_map(),
+          ['<C-b>'] = cmp.mapping.scroll_docs(-3),
           ['<C-f>'] = cmp.mapping.scroll_docs(4),
 
           -- Accept ([y]es) the completion.
@@ -974,10 +976,42 @@ require('lazy').setup({
             -- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
             group_index = 0,
           },
+          { name = 'minuet' },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
           { name = 'nvim_lsp_signature_help' },
+        },
+      }
+    end,
+  },
+
+  { -- AI-powered code completion
+    'milanglacier/minuet-ai.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'hrsh7th/nvim-cmp',
+    },
+    config = function()
+      require('minuet').setup {
+        provider = 'openai_compatible',
+        request_timeout = 2.5,
+        throttle = 1500,
+        debounce = 600,
+        notify = 'verbose', -- Enable verbose notifications to see what's happening
+        provider_options = {
+          openai_compatible = {
+            api_key = 'OPENROUTER_API_KEY', -- Use environment variable
+            end_point = 'https://openrouter.ai/api/v1/chat/completions',
+            model = 'google/gemini-2.5-flash',
+            name = 'OpenRouter',
+            optional = {
+              max_tokens = 5000,
+              provider = {
+                sort = 'throughput',
+              },
+            },
+          },
         },
       }
     end,
@@ -1221,7 +1255,7 @@ require('lazy').setup({
 })
 
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'c', 'cpp', 'objc', 'objcpp' },
+  pattern = { 'c', 'cpp', 'cuda', 'objc', 'objcpp' },
   callback = function()
     vim.bo.commentstring = '// %s'
   end,
@@ -1243,6 +1277,13 @@ end
 vim.filetype.add {
   extension = {
     mlir = 'mlir',
+  },
+}
+
+vim.filetype.add {
+  extension = {
+    cu = 'cuda',
+    cuh = 'cuda',
   },
 }
 
