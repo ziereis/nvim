@@ -1020,24 +1020,36 @@ require('lazy').setup({
   --     vim.cmd.colorscheme 'rose-pine'
   --   end,
   -- },
+  -- {
+  --   'folke/tokyonight.nvim',
+  --   priority = 1000,
+  --   config = function()
+  --     require('tokyonight').setup {
+  --       style = 'night', -- Options: 'storm', 'night', 'moon', 'day'
+  --       transparent = true, -- Enable transparency
+  --       styles = {
+  --         comments = { italic = false },
+  --         keywords = { italic = false },
+  --         functions = {},
+  --         variables = {},
+  --         -- Background styles for transparent mode
+  --         sidebars = 'transparent',
+  --         floats = 'transparent',
+  --       },
+  --     }
+  --     vim.cmd.colorscheme 'tokyonight'
+  --   end,
+  -- },
   {
-    'folke/tokyonight.nvim',
-    priority = 1000,
+    'Tsuzat/NeoSolarized.nvim',
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
-      require('tokyonight').setup {
-        style = 'night', -- Options: 'storm', 'night', 'moon', 'day'
-        transparent = true, -- Enable transparency
-        styles = {
-          comments = { italic = false },
-          keywords = { italic = false },
-          functions = {},
-          variables = {},
-          -- Background styles for transparent mode
-          sidebars = 'transparent',
-          floats = 'transparent',
-        },
+      require('NeoSolarized').setup {
+        style = 'dark',
+        transparent = true,
       }
-      vim.cmd.colorscheme 'tokyonight'
+      vim.cmd [[ colorscheme NeoSolarized ]]
     end,
   },
 
