@@ -688,6 +688,31 @@ require('lazy').setup({
         },
       }
 
+      -- Python-specific diagnostic config: Only show errors, hide warnings/info/hints
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'python',
+        callback = function()
+          vim.diagnostic.config({
+            virtual_text = {
+              source = 'if_many',
+              spacing = 2,
+              format = function(diagnostic)
+                if diagnostic.severity == vim.diagnostic.severity.ERROR then
+                  return diagnostic.message
+                end
+                return nil -- Hide non-error diagnostics
+              end,
+            },
+            signs = {
+              severity = { min = vim.diagnostic.severity.ERROR },
+            },
+            underline = {
+              severity = { min = vim.diagnostic.severity.ERROR },
+            },
+          }, vim.api.nvim_get_current_buf())
+        end,
+      })
+
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
