@@ -768,6 +768,7 @@ require('lazy').setup({
             python = {
               -- Set the analysis to look in the current working directory
               analysis = {
+                typeCheckingMode = 'off',
                 autoSearchPaths = true,
                 diagnosticMode = 'workspace',
                 useLibraryCodeForTypes = true,
@@ -1050,7 +1051,10 @@ require('lazy').setup({
     ---@type render.md.UserConfig
     opts = {},
   },
-
+  {
+    'hanhanW/mlir-fold.nvim',
+    ft = 'mlir',
+  },
   -- {
   --   'bluz71/vim-moonfly-colors',
   --   priority = 1000,
