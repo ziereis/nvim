@@ -1336,5 +1336,41 @@ require('lspconfig').mlir.setup {
   end,
 }
 
+-- Disable performance-impacting features for large MLIR files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'mlir',
+  callback = function(args)
+    local bufnr = args.buf
+
+    -- Stop all LSP clients for this buffer
+    local clients = vim.lsp.get_clients { bufnr = bufnr }
+    for _, client in ipairs(clients) do
+      vim.lsp.stop_client(client.id)
+    end
+
+    -- Disable treesitter highlighting
+    vim.treesitter.stop(bufnr)
+
+    -- Disable completion
+    local ok, cmp = pcall(require, 'cmp')
+    if ok then
+      cmp.setup.buffer { enabled = false }
+    end
+
+    -- Disable diagnostics
+    vim.diagnostic.enable(false, { bufnr = bufnr })
+
+    -- Disable minuet AI completions
+    vim.b[bufnr].minuet_disable = true
+
+    -- Additional buffer options for large files
+    vim.bo[bufnr].syntax = 'off'
+    vim.bo[bufnr].swapfile = false
+    vim.bo[bufnr].undofile = false
+
+    print('MLIR: Performance features disabled for large file')
+  end,
+})
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
